@@ -44,9 +44,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       match: [/^https?:\/\/(www\.)?linkedin\.com\/.*$/, "Invalid LinkedIn URL"],
     },
-    shopifyAccessToken: {
-      type: String,
-    },
     isUserVerified: {
         type: Boolean,
         default: false
