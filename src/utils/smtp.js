@@ -12,7 +12,7 @@ const sendEmail = async (email , title , body) => {
   });
 
   const mailOptions = {
-    from: 'IEI Student Chapter',
+    from: 'Bargenix',
     to: `${email}`,
     subject: `${title}`,
     html: `${body}`,

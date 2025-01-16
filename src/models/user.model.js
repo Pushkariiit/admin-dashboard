@@ -47,6 +47,10 @@ const userSchema = new mongoose.Schema(
     shopifyAccessToken: {
       type: String,
     },
+    isUserVerified: {
+        type: Boolean,
+        default: false
+    },
     verificationToken: { 
         type: String 
     },
