@@ -3,9 +3,7 @@ import { ApiResponse } from "./apiResponse.js"
 
 export const sendToken = async(user, statusCode, res, message) => {
     const accessToken = user.generateAccessToken()
-    const refreshToken = user.generateRefreshToken()
 
-    user.refreshToken = refreshToken
     await user.save({ validateBeforeSave: false })
     const options = {
       expires: new Date(
@@ -19,13 +17,12 @@ export const sendToken = async(user, statusCode, res, message) => {
   
     return res
     .status(statusCode)
-    .cookie("RMS_accessToken", accessToken, options)
-    .cookie("RMS_refreshToken", refreshToken, options)
+    .cookie("bargenix_accessToken", accessToken, options)
     .json(
         new ApiResponse(
             200, 
             {
-                user:loggedInUser, accessToken, refreshToken
+                user:loggedInUser, accessToken
             },
             message
         )

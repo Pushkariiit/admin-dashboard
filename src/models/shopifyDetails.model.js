@@ -12,6 +12,10 @@ const shopifyDetailsSchema = new mongoose.Schema(
         required: true,
         trim: true
     },
+    apiVersion: {
+      type: String,
+      required: true
+    },
     userId: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'User', 
@@ -20,4 +24,4 @@ const shopifyDetailsSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model('shipifyDetails', shopifyDetailsSchema);
+export const ShopifyDetails = mongoose.model('shopifyDetails', shopifyDetailsSchema);

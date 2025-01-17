@@ -4,16 +4,16 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-router.route("/singup")
+router.route("/signup")
     .post(signup)
 
 router.route("/verify-user/:token")
     .put(verifyUser)
 
-router.route("/login-owner")
+router.route("/signin")
     .post(signin)
 
-router.route("/logout")
+router.route("/signout")
     .get(verifyJWT, signout)
 
 router.route("/current-user")

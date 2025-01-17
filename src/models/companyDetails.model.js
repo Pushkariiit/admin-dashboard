@@ -53,4 +53,4 @@ const companyDetailsSchema = new mongoose.Schema(
   { timestamps: true } // Includes `createdAt` and `updatedAt`
 );
 
-module.exports = mongoose.model('CompanyDetails', companyDetailsSchema);
+export const CompanyDetails = mongoose.model('CompanyDetails', companyDetailsSchema);

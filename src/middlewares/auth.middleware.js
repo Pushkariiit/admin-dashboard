@@ -5,7 +5,7 @@ import { asyncHandler } from "../utils/asyncHandler.js"
 
 export const verifyJWT = asyncHandler(async(req, _, next) => {
     try {
-        const token = req.cookies?.RMS_accessToken || req.header("Authorization")?.replace("Bearer ", "")
+        const token = req.cookies?.bargenix_accessToken || req.header("Authorization")?.replace("Bearer ", "")
         
         if (!token) {
             throw new ApiError(401, "Please login to proceed")

@@ -23,9 +23,11 @@ app.get("/api/v1",(req,res)=>{
 //Routes
 import userRouter from "./routes/user.route.js"
 import shopifyRouter from "./routes/shopify.route.js"
+import bargainingRouter from "./routes/bargaining.route.js"
 
 app.use("/api/v1/users", userRouter);
-app.use("/api/v1/shops", shopifyRouter);
+app.use("/api/v1/shopify", shopifyRouter);
+app.use("/api/v1/bargaining", bargainingRouter);
 
 app.use(errorMiddleware);
 

@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import { BARGAIN_BEHAVIOUR } from '../constants';
+import { BARGAIN_BEHAVIOUR } from '../constants.js';
 
 const bargainingDetailsSchema = new mongoose.Schema(
   {
@@ -17,6 +17,9 @@ const bargainingDetailsSchema = new mongoose.Schema(
         required: true, 
         min: 0 
     },
+    isAvailable: {
+        type: Boolean
+    },
     userId: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'User', 
@@ -26,4 +29,4 @@ const bargainingDetailsSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model('BargainingDetails', bargainingDetailsSchema);
+export const BargainingDetails = mongoose.model('BargainingDetails', bargainingDetailsSchema);
