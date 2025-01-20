@@ -10,9 +10,6 @@ import { ShopifyDetails } from "../models/shopifyDetails.model.js";
 export const signup = asyncHandler(async (req, res, next) => {
     const { firstName, lastName, email, contactNumber, password, designation, linkedInUrl, companyName, companyWebsite, employeeSize, kindsOfProducts, country, state, city, shopifyAccessToken, shopifyShopName } = req.body;
 
-    // console.log("Received signup request for:", email); // Debug log
-
-    // Check for existing user
     const existingUser = await User.findOne({
         $or: [{ email }, { contactNumber }]
     });
@@ -21,7 +18,6 @@ export const signup = asyncHandler(async (req, res, next) => {
         throw new ApiError(400, "User with email or contact number already exists");
     }
 
-    // Create new user
     const user = await User.create({
         firstName,
         lastName,
@@ -33,11 +29,9 @@ export const signup = asyncHandler(async (req, res, next) => {
         isUserVerified: false
     });
 
-    // Generate OTP
     const { OTP } = user.generateVerificationTokenAndOtp();
     await user.save();
 
-    // Create company details
     await CompanyDetails.create({
         companyName,
         companyWebsite,
@@ -49,7 +43,6 @@ export const signup = asyncHandler(async (req, res, next) => {
         userId: user._id
     });
 
-    // Send OTP email
     await sendEmail({
         email: user.email,
         subject: "Verify Your Email - Bargenix",
@@ -109,7 +102,6 @@ export const signin = asyncHandler(async (req, res, next) => {
     }
 
     if (!user.isUserVerified) {
-        // Generate new OTP for unverified users
         const { OTP } = user.generateVerificationTokenAndOtp();
         await user.save();
 
@@ -162,7 +154,6 @@ export const changeCurrentPassword = asyncHandler(async (req, res, next) => {
     user.password = newPassword;
     await user.save();
 
-    // Send email notification
     await sendEmail({
         email: user.email,
         subject: "Password Changed - Bargenix",
@@ -202,10 +193,9 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
         throw new ApiError(404, "User not found");
     }
 
-    // Generate OTP for password reset
     const { OTP } = user.generateVerificationTokenAndOtp();
     user.resetPasswordToken = OTP;
-    user.resetPasswordExpire = Date.now() + 15 * 60 * 1000; // 15 minutes
+    user.resetPasswordExpire = Date.now() + 15 * 60 * 1000; 
     await user.save();
 
     try {
