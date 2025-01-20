@@ -49,16 +49,6 @@ export const signup = asyncHandler(async (req, res, next) => {
         userId: user._id
     });
 
-    // Create Shopify details if provided
-    if (shopifyAccessToken && shopifyShopName) {
-        await ShopifyDetails.create({
-            accessToken: shopifyAccessToken,
-            shopifyShopName,
-            apiVersion: "2024-01",
-            userId: user._id
-        });
-    }
-
     // Send OTP email
     await sendEmail({
         email: user.email,
@@ -74,16 +64,13 @@ export const signup = asyncHandler(async (req, res, next) => {
 
 
 export const verifyUser = asyncHandler(async (req, res, next) => {
-    console.log("Received request for verification:", req.body); // Log the request body
-
+   
     const { email, otp } = req.body;
 
     if (!email || !otp) {
-        console.error("Missing email or OTP in request");
         throw new ApiError(400, "Please provide both email and OTP");
     }
 
-    console.log(`Finding user with email: ${email} and OTP: ${otp}`);
     const user = await User.findOne({
         email,
         verificationOTP: otp,
@@ -91,16 +78,13 @@ export const verifyUser = asyncHandler(async (req, res, next) => {
     });
 
     if (!user) {
-        console.error("No user found with matching email and OTP");
-        throw new ApiError(400, "Invalid OTP or email");
+        return next(new ApiError(400, "Invalid OTP or email"));
     }
 
-    console.log("User found, marking as verified");
     user.isUserVerified = true;
     user.verificationOTP = undefined;
     await user.save();
 
-    console.log("User verification successful, sending token");
     sendToken(user, 200, res, "Account verified successfully");
 });
 
