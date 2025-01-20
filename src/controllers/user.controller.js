@@ -6,6 +6,8 @@ import { ApiResponse } from "../utils/apiResponse.js";
 import { sendToken } from "../utils/sendToken.js";
 import { CompanyDetails } from "../models/companyDetails.model.js";
 import { ShopifyDetails } from "../models/shopifyDetails.model.js";
+import { randomBytes } from "crypto";  
+
 
 export const signup = asyncHandler(async (req, res, next) => {
     const { firstName, lastName, email, contactNumber, password, designation, linkedInUrl, companyName, companyWebsite, employeeSize, kindsOfProducts, country, state, city, shopifyAccessToken, shopifyShopName } = req.body;
@@ -23,7 +25,6 @@ export const signup = asyncHandler(async (req, res, next) => {
         lastName,
         email,
         contactNumber,
-        password,
         designation,
         linkedInUrl,
         isUserVerified: false
@@ -57,7 +58,6 @@ export const signup = asyncHandler(async (req, res, next) => {
 
 
 export const verifyUser = asyncHandler(async (req, res, next) => {
-   
     const { email, otp } = req.body;
 
     if (!email || !otp) {
@@ -74,11 +74,20 @@ export const verifyUser = asyncHandler(async (req, res, next) => {
         return next(new ApiError(400, "Invalid OTP or email"));
     }
 
+    const password = randomBytes(8).toString('hex'); 
+
+    user.password = password;
     user.isUserVerified = true;
     user.verificationOTP = undefined;
     await user.save();
 
-    sendToken(user, 200, res, "Account verified successfully");
+    await sendEmail({
+        email: user.email,
+        subject: "Account Verified - Bargenix",
+        message: `Your account has been successfully verified. Your login credentials are as follows:\n\nUsername: ${user.email}\nPassword: ${password}\n\nPlease change your password after logging in.`
+    });
+
+    sendToken(user, 200, res, "Account verified and password sent successfully");
 });
 
 
