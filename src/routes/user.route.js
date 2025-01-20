@@ -7,7 +7,7 @@ const router = Router();
 router.route("/signup")
     .post(signup)
 
-router.route("/verify-user/:token")
+router.route("/verify-user")
     .put(verifyUser)
 
 router.route("/signin")
