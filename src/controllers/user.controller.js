@@ -6,13 +6,12 @@ import { ApiResponse } from "../utils/apiResponse.js";
 import { sendToken } from "../utils/sendToken.js";
 import { CompanyDetails } from "../models/companyDetails.model.js";
 import { ShopifyDetails } from "../models/shopifyDetails.model.js";
+import { randomBytes } from "crypto";  
+
 
 export const signup = asyncHandler(async (req, res, next) => {
     const { firstName, lastName, email, contactNumber, password, designation, linkedInUrl, companyName, companyWebsite, employeeSize, kindsOfProducts, country, state, city, shopifyAccessToken, shopifyShopName } = req.body;
 
-    // console.log("Received signup request for:", email); // Debug log
-
-    // Check for existing user
     const existingUser = await User.findOne({
         $or: [{ email }, { contactNumber }]
     });
@@ -21,23 +20,19 @@ export const signup = asyncHandler(async (req, res, next) => {
         throw new ApiError(400, "User with email or contact number already exists");
     }
 
-    // Create new user
     const user = await User.create({
         firstName,
         lastName,
         email,
         contactNumber,
-        password,
         designation,
         linkedInUrl,
         isUserVerified: false
     });
 
-    // Generate OTP
     const { OTP } = user.generateVerificationTokenAndOtp();
     await user.save();
 
-    // Create company details
     await CompanyDetails.create({
         companyName,
         companyWebsite,
@@ -49,7 +44,6 @@ export const signup = asyncHandler(async (req, res, next) => {
         userId: user._id
     });
 
-    // Send OTP email
     await sendEmail({
         email: user.email,
         subject: "Verify Your Email - Bargenix",
@@ -64,7 +58,6 @@ export const signup = asyncHandler(async (req, res, next) => {
 
 
 export const verifyUser = asyncHandler(async (req, res, next) => {
-   
     const { email, otp } = req.body;
 
     if (!email || !otp) {
@@ -81,11 +74,20 @@ export const verifyUser = asyncHandler(async (req, res, next) => {
         return next(new ApiError(400, "Invalid OTP or email"));
     }
 
+    const password = randomBytes(8).toString('hex'); 
+
+    user.password = password;
     user.isUserVerified = true;
     user.verificationOTP = undefined;
     await user.save();
 
-    sendToken(user, 200, res, "Account verified successfully");
+    await sendEmail({
+        email: user.email,
+        subject: "Account Verified - Bargenix",
+        message: `Your account has been successfully verified. Your login credentials are as follows:\n\nUsername: ${user.email}\nPassword: ${password}\n\nPlease change your password after logging in.`
+    });
+
+    sendToken(user, 200, res, "Account verified and password sent successfully");
 });
 
 
@@ -109,7 +111,6 @@ export const signin = asyncHandler(async (req, res, next) => {
     }
 
     if (!user.isUserVerified) {
-        // Generate new OTP for unverified users
         const { OTP } = user.generateVerificationTokenAndOtp();
         await user.save();
 
@@ -162,7 +163,6 @@ export const changeCurrentPassword = asyncHandler(async (req, res, next) => {
     user.password = newPassword;
     await user.save();
 
-    // Send email notification
     await sendEmail({
         email: user.email,
         subject: "Password Changed - Bargenix",
@@ -202,10 +202,9 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
         throw new ApiError(404, "User not found");
     }
 
-    // Generate OTP for password reset
     const { OTP } = user.generateVerificationTokenAndOtp();
     user.resetPasswordToken = OTP;
-    user.resetPasswordExpire = Date.now() + 15 * 60 * 1000; // 15 minutes
+    user.resetPasswordExpire = Date.now() + 15 * 60 * 1000; 
     await user.save();
 
     try {
