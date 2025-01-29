@@ -24,8 +24,10 @@ app.get("/api/v1",(req,res)=>{
 import userRouter from "./routes/user.route.js"
 import shopifyRouter from "./routes/shopify.route.js"
 import bargainingRouter from "./routes/bargaining.route.js"
+import companyRouter from "./routes/company.route.js"
 
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/company", companyRouter);
 app.use("/api/v1/shopify", shopifyRouter);
 app.use("/api/v1/bargaining", bargainingRouter);
 
