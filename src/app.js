@@ -16,6 +16,15 @@ app.use(express.urlencoded({extended: true, limit: URLDATA_LIMIT}));
 app.use(express.static("public"));
 app.use(cookieParser());
 
+
+app.use((req, res, next) => {
+    res.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+    res.set("Pragma", "no-cache");
+    res.set("Expires", "0");
+    next();
+});
+
+
 app.get("/api/v1",(req,res)=>{
     res.send("<h1>Api is working</h1>")
 })

@@ -20,6 +20,9 @@ const bargainingDetailsSchema = new mongoose.Schema(
     isAvailable: {
         type: Boolean
     },
+    isActive:{
+        type:Boolean
+    },
     userId: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'User', 
